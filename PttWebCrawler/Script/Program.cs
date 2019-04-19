@@ -13,7 +13,7 @@ namespace PttWebCrawler
             Initializae();
 
             //_Crawler.Crawl();
-            _Crawler.CrawlByArticleId();
+            //_Crawler.CrawlByArticleId();
         }
 
         private static void ParseArguments(string[] args)
