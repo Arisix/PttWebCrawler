@@ -1,14 +1,15 @@
-﻿using Options;
-using Patterns;
-using HtmlAgilityPack;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using HtmlAgilityPack;
 using Logger;
+using Options;
+using Patterns;
 
 namespace Crawler
 {
-    class CrawlerAgent : Singleton<CrawlerAgent>
+    class CrawlerController : Singleton<CrawlerController>
     {
         private CookiesClient _WebClient = null;
         private LoggerManager _Logger = null;
@@ -47,9 +48,42 @@ namespace Crawler
             {
                 articleId = Config.ArticleId;
             }
-            _Logger.Debug("Processing article : " + articleId);
-            GetArticlePage(articleId);
 
+            #region Prepare to Create Data
+            string url = string.Empty;
+            string board = string.Empty;
+            string Id = string.Empty;
+            string title = string.Empty;
+            string author = string.Empty;
+            string date = string.Empty;
+            string content = string.Empty;
+            string ip = string.Empty;
+            #endregion
+
+            _Logger.Debug("Processing article : " + articleId);
+            HtmlDocument doc = GetArticlePage(articleId);
+            var mainContent = doc.QuerySelectorAll("#main-content");
+            var mainContentText = mainContent[0].InnerText;
+
+
+            var metas = mainContent.QuerySelectorAll("div.article-metaline");
+
+            if(metas.Count >= 3)
+            {
+                author = metas[0].QuerySelector("span.article-meta-value").InnerText;
+                title = metas[1].QuerySelector("span.article-meta-value").InnerText;
+                date = metas[2].QuerySelector("span.article-meta-value").InnerText;
+
+                Console.WriteLine(author);
+                Console.WriteLine(title);
+                Console.WriteLine(date);
+            }
+
+            string pattern = "※ 發信站:.*來自: ([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})";
+            ip = Regex.Match(mainContentText, pattern).Groups[1].Value;
+            Console.WriteLine(ip);
+
+            var pushes = mainContent.QuerySelectorAll("div.push");
         }
 
         private int GetLastBoardPageNumber()
@@ -76,11 +110,6 @@ namespace Crawler
 
         private HtmlDocument GetArticlePage(string articleId = null)
         {
-            if(articleId == null)
-            {
-                articleId = Config.ArticleId;
-            }
-
             string url = Helper.GetArticlePageUrl(articleId);
             MemoryStream ms = new MemoryStream(_WebClient.DownloadData(url));
             HtmlDocument doc = new HtmlDocument();

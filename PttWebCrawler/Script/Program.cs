@@ -5,7 +5,7 @@ namespace PttWebCrawler
 {
     class Program
     {
-        private static CrawlerAgent _Crawler = null;
+        private static CrawlerController _Crawler = null;
 
         public static void Main(string[] args)
         {
@@ -13,7 +13,7 @@ namespace PttWebCrawler
             Initializae();
 
             //_Crawler.Crawl();
-            //_Crawler.CrawlByArticleId();
+            _Crawler.CrawlByArticleId();
         }
 
         private static void ParseArguments(string[] args)
@@ -23,7 +23,7 @@ namespace PttWebCrawler
 
         private static void Initializae()
         {
-            _Crawler = CrawlerAgent.Instance;
+            _Crawler = CrawlerController.Instance;
         }
     }
 }

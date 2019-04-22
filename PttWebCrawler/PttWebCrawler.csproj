@@ -48,8 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Script\Crawler\ArticleData.cs" />
-    <Compile Include="Script\Crawler\Crawler.cs" />
+    <Compile Include="Script\Crawler\Data\ArticleData.cs" />
+    <Compile Include="Script\Crawler\CrawlerController.cs" />
+    <Compile Include="Script\Crawler\Data\MessageData.cs" />
+    <Compile Include="Script\Crawler\Data\PushType.cs" />
     <Compile Include="Script\Helper\Helper.cs" />
     <Compile Include="Script\Crawler\CookiesClient.cs">
       <SubType>Component</SubType>
