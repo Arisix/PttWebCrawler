@@ -37,7 +37,6 @@ namespace Logger
         {
             InfoData data = new InfoData(content, type);
             ThreadPool.QueueUserWorkItem(new WaitCallback(WriteLine), data);
-            
         }
 
         public void WriteLine(string title, string content, InfoType type = InfoType.Debug)

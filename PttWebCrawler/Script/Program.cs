@@ -1,5 +1,6 @@
 using Crawler;
 using Options;
+using System.Threading;
 
 namespace PttWebCrawler
 {
@@ -9,11 +10,15 @@ namespace PttWebCrawler
 
         public static void Main(string[] args)
         {
+            ThreadPool.SetMinThreads(250, 250);
+            ThreadPool.SetMaxThreads(250, 250);
+
             ParseArguments(args);
             Initializae();
 
-            //_Crawler.Crawl();
-            _Crawler.CrawlByArticleId();
+            _Crawler.Crawl();
+
+            System.Console.ReadKey();
         }
 
         private static void ParseArguments(string[] args)

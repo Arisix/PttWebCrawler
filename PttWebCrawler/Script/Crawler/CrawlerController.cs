@@ -1,9 +1,5 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
-using HtmlAgilityPack;
-using Logger;
+﻿using Logger;
+using Newtonsoft.Json;
 using Options;
 using Patterns;
 
@@ -13,11 +9,17 @@ namespace Crawler
     {
         private CookiesClient _WebClient = null;
         private LoggerManager _Logger = null;
+        private ArticleCrawler _ArticleCrawler = null;
+        private BoardCrawler _BoardCrawler = null;
+        private ResultWriter _Writer = null;
 
         public override void Initialize()
         {
             _WebClient = CookiesClient.Instance;
             _Logger = LoggerManager.Instance;
+            _ArticleCrawler = ArticleCrawler.Instance;
+            _BoardCrawler = BoardCrawler.Instance;
+            _Writer = ResultWriter.Instance;
         }
 
         public void Crawl()
@@ -26,7 +28,7 @@ namespace Crawler
             {
                 if (Config.EndIndex < Config.StartIndex)
                 {
-                    Config.EndIndex = GetLastBoardPageNumber();
+                    Config.EndIndex = _BoardCrawler.GetBoardLastPageNumber();
                 }
 
                 CrawlByBoardIndex();
@@ -39,83 +41,41 @@ namespace Crawler
 
         private void CrawlByBoardIndex()
         {
+            int now = Config.StartIndex;
+            int end = Config.EndIndex;
+            string board = Config.BoardName;
 
-        }
+            _Writer.Write("{\"ArticleList\":[");
 
-        public void CrawlByArticleId(string articleId = null)
-        {
-            if(string.IsNullOrEmpty(articleId))
+            while(now <= end)
             {
-                articleId = Config.ArticleId;
+                var list = _BoardCrawler.GetAriticleIdInPage(board, now);
+
+                for (int i = 0; i < list.Count; i++)
+                {
+                    ArticleData data = _ArticleCrawler.Crawl(board, list[i]);
+                    var json = JsonConvert.SerializeObject(data);
+                    if((now == end) && (i == list.Count - 1))
+                    {
+                        _Writer.Write(json);
+                    }
+                    else
+                    {
+                        string output = string.Format("{0},", json);
+                        _Writer.Write(output);
+                    }
+                }
+                now++;
             }
 
-            #region Prepare to Create Data
-            string url = string.Empty;
-            string board = string.Empty;
-            string Id = string.Empty;
-            string title = string.Empty;
-            string author = string.Empty;
-            string date = string.Empty;
-            string content = string.Empty;
-            string ip = string.Empty;
-            #endregion
-
-            _Logger.Debug("Processing article : " + articleId);
-            HtmlDocument doc = GetArticlePage(articleId);
-            var mainContent = doc.QuerySelectorAll("#main-content");
-            var mainContentText = mainContent[0].InnerText;
-
-
-            var metas = mainContent.QuerySelectorAll("div.article-metaline");
-
-            if(metas.Count >= 3)
-            {
-                author = metas[0].QuerySelector("span.article-meta-value").InnerText;
-                title = metas[1].QuerySelector("span.article-meta-value").InnerText;
-                date = metas[2].QuerySelector("span.article-meta-value").InnerText;
-
-                Console.WriteLine(author);
-                Console.WriteLine(title);
-                Console.WriteLine(date);
-            }
-
-            string pattern = "※ 發信站:.*來自: ([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})";
-            ip = Regex.Match(mainContentText, pattern).Groups[1].Value;
-            Console.WriteLine(ip);
-
-            var pushes = mainContent.QuerySelectorAll("div.push");
+            _Writer.Write("]}");
         }
 
-        private int GetLastBoardPageNumber()
+        private void CrawlByArticleId(string boardName = null, string articleId = null)
         {
-            int result;
-
-            HtmlDocument data = GetBoardPage();
-            string pattern = string.Format("href=\"/bbs/{0}/index([0-9]+).html\">&lsaquo;", Config.BoardName);
-            var match = Regex.Match(data.DocumentNode.InnerHtml, pattern);
-
-            result = int.Parse(match.Groups[1].Value);
-
-            return result;
-        }
-
-        private HtmlDocument GetBoardPage(int index = -1)
-        {
-            string url = Helper.GetBoradPageUrl(index);
-            MemoryStream ms = new MemoryStream(_WebClient.DownloadData(url));
-            HtmlDocument doc = new HtmlDocument();
-            doc.Load(ms, Encoding.UTF8);
-            return doc;
-        }
-
-        private HtmlDocument GetArticlePage(string articleId = null)
-        {
-            string url = Helper.GetArticlePageUrl(articleId);
-            MemoryStream ms = new MemoryStream(_WebClient.DownloadData(url));
-            HtmlDocument doc = new HtmlDocument();
-            doc.Load(ms, Encoding.UTF8);
-
-            return doc;
+            ArticleData data = _ArticleCrawler.Crawl(boardName, articleId);
+            var json = JsonConvert.SerializeObject(data);
+            _Writer.Write(json);
         }
     }
 }

@@ -38,6 +38,9 @@
     <Reference Include="HtmlAgilityPack.CssSelectors, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\HtmlAgilityPack.CssSelectors.1.0.2\lib\net45\HtmlAgilityPack.CssSelectors.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,12 +51,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Script\Crawler\Crawler\ArticleCrawler.cs" />
+    <Compile Include="Script\Crawler\Crawler\BoardCrawler.cs" />
     <Compile Include="Script\Crawler\Data\ArticleData.cs" />
     <Compile Include="Script\Crawler\CrawlerController.cs" />
-    <Compile Include="Script\Crawler\Data\MessageData.cs" />
+    <Compile Include="Script\Crawler\Data\ArticleDataList.cs" />
+    <Compile Include="Script\Crawler\Data\PushData.cs" />
     <Compile Include="Script\Crawler\Data\PushType.cs" />
+    <Compile Include="Script\Crawler\ResultWriter.cs" />
     <Compile Include="Script\Helper\Helper.cs" />
-    <Compile Include="Script\Crawler\CookiesClient.cs">
+    <Compile Include="Script\Crawler\Crawler\CookiesClient.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Script\Logger\BaseClass\InfoData.cs" />
