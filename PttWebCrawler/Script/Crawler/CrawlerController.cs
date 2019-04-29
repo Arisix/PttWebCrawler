@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Options;
 using Patterns;
+using System.Threading;
 
 namespace Crawler
 {
@@ -64,6 +65,8 @@ namespace Crawler
                         string output = string.Format("{0},", json);
                         _Writer.Write(output);
                     }
+
+                    Thread.Sleep(100);
                 }
                 now++;
             }

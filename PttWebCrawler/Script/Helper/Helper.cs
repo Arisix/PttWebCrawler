@@ -37,10 +37,10 @@ namespace Crawler
         {
             if(Config.StartIndex > 0)
             {
-                return string.Format("Marginalman_{0}to{1}_{2}.json", Config.StartIndex, Config.EndIndex, DateTime.Now.ToFileTimeUtc());
+                return string.Format("Marginalman_{0}_{1}.json", Config.StartIndex, Config.EndIndex);
             }
 
-            return string.Format("Marginalman_{0}_{1}.json", Config.ArticleId, DateTime.Now.ToFileTimeUtc());
+            return string.Format("Marginalman_{0}.json", Config.ArticleId);
         }
     }
 }

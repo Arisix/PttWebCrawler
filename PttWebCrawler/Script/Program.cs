@@ -18,7 +18,7 @@ namespace PttWebCrawler
 
             _Crawler.Crawl();
 
-            System.Console.ReadKey();
+            Wait();
         }
 
         private static void ParseArguments(string[] args)
@@ -29,6 +29,12 @@ namespace PttWebCrawler
         private static void Initializae()
         {
             _Crawler = CrawlerController.Instance;
+        }
+
+        private static void Wait()
+        {
+            System.Console.Write("Press any key to continue...");
+            System.Console.ReadKey();
         }
     }
 }
